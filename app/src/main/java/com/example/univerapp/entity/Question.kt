@@ -5,5 +5,5 @@ import java.io.Serializable
 data class Question(
     val id : Int,
     val text : String?,
-    val test_id : Int?
+    val course_id : Int?
 ) : Serializable
