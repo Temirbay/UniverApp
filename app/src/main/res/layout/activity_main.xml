@@ -84,7 +84,7 @@
         android:layout_width="match_parent"
         android:background="@drawable/background_button"
         android:layout_margin="16dp"
-        android:text="Результаты"
+        android:text="Нәтижелер"
         android:textStyle="bold"
         android:textColor="@color/colorPrimary"
         app:layout_constraintTop_toBottomOf="@id/recycler"

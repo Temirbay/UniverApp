@@ -1,9 +1,11 @@
 package com.example.univerapp.view.test
 
+import android.graphics.Color
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import android.view.View
+import android.widget.Toast
 import com.example.univerapp.R
 import com.example.univerapp.adapter.Adapter
 import com.example.univerapp.entity.Answer
@@ -18,6 +20,7 @@ class QuestionsActivity : AppCompatActivity(), Adapter.OnItemClickListener {
     private var questions = arrayListOf<Question>()
     private var currentQuestionNumber = 0
     private var correct = 0
+    private var correctAnswers = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,7 +51,8 @@ class QuestionsActivity : AppCompatActivity(), Adapter.OnItemClickListener {
                 Answer(0, "Lorem Ipsum has been the industry's standard", 1, 0),
                 Answer(1, "It has survived not only five centuries", 0, 0),
                 Answer(2, "It was popularised in the 1960s with the release of Letraset", 0, 0),
-                Answer(3, "There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration", 0, 0)
+                Answer(4, "Lorem Ipsum has been the industry's standard", 0, 0),
+                Answer(5, "It was popularised in the 1960s with the release of Letraset", 0, 0),Answer(3, "There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration", 0, 0)
         )
         adapter?.updateList(items)
     }
@@ -69,18 +73,8 @@ class QuestionsActivity : AppCompatActivity(), Adapter.OnItemClickListener {
 
     private fun initViews() {
         button.setOnClickListener {
-            if (button.text == "Басынан бастау") {
-                startTest()
-            }
-            else if (button.text == "Келесі сұрақ"){
+            if (button.text == "Келесі сұрақ"){
                 nextQuestion()
-            }
-        }
-        exit.setOnClickListener {
-            if (resultForm.visibility == View.GONE) {
-                finishTest()
-            } else {
-                onBackPressed()
             }
         }
     }
@@ -95,16 +89,16 @@ class QuestionsActivity : AppCompatActivity(), Adapter.OnItemClickListener {
     }
 
     private fun showQuestion(id: Int) {
-        button.text = "Басынан бастау"
-        questionNumber.text = "$id сұрақ"
-        question.text = questions[id].text
+        question.text = "${id + 1}.   ${questions[id].text}"
         loadAnswers(questions[id].id)
+        correctAnswers = 0
     }
 
 
     private fun nextQuestion() {
         if (currentQuestionNumber < questions.size-1) {
             currentQuestionNumber+=1
+            Toast.makeText(this, "${correctAnswers} дұрыс жауап" , Toast.LENGTH_SHORT).show()
             showQuestion(currentQuestionNumber)
         }
         else {
@@ -119,9 +113,12 @@ class QuestionsActivity : AppCompatActivity(), Adapter.OnItemClickListener {
         if (percent > 75F)
             button.visibility = View.GONE
         showProgress (percent)
-        button.text = "Басынан бастау"
-        tvResult.text = "Дұрыс жауап саны: $correct"
-        tvTotal.text = "Барлық сұрақ саны: ${questions.size}"
+        button.visibility = View.GONE
+        tvResult.text = "$correct дұрыс жауап"
+        tvResult.setTextColor(Color.CYAN)
+        tvPoints.text = "50 балл"
+
+        tvPoints.setTextColor(Color.GREEN)
     }
 
     private fun showProgress(percent : Float) {
@@ -141,6 +138,7 @@ class QuestionsActivity : AppCompatActivity(), Adapter.OnItemClickListener {
         if (answer.isCorrect == 1) {
             button.text = "Келесі сұрақ"
             correct += 1
+            correctAnswers += 1
             recycler.isClickable = false
         }
     }

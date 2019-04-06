@@ -10,8 +10,10 @@ import com.example.univerapp.R
 import com.example.univerapp.entity.Answer
 import com.example.univerapp.entity.Course
 import com.example.univerapp.entity.Lesson
+import com.example.univerapp.entity.TestResult
 import kotlinx.android.synthetic.main.item_answer.view.*
 import kotlinx.android.synthetic.main.item_course.view.*
+import kotlinx.android.synthetic.main.item_result.view.*
 
 
 class Adapter(private val context : Context,
@@ -25,6 +27,7 @@ class Adapter(private val context : Context,
         const val Course = 0
         const val Answer = 1
         const val Lesson = 2
+        const val TestResult = 3
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -34,6 +37,9 @@ class Adapter(private val context : Context,
             }
             HolderTypes.Lesson -> {
                 LessonViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_lesson, parent, false))
+            }
+            HolderTypes.TestResult -> {
+                ResultViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_result, parent, false))
             }
             else -> {
                 AnswerViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_answer, parent, false))
@@ -49,6 +55,7 @@ class Adapter(private val context : Context,
         return when(items[position]) {
             is Course -> HolderTypes.Course
             is Lesson -> HolderTypes.Lesson
+            is TestResult -> HolderTypes.TestResult
             else -> HolderTypes.Answer
         }
     }
@@ -102,30 +109,26 @@ class Adapter(private val context : Context,
                 holder.itemView.answer.setTextColor(context.resources.getColor(R.color.textColor))
 
                 holder.itemView.bnAnswer.setOnClickListener {
-                    if (answer.isCorrect == 0) {
-                        holder.itemView.answer.setTextColor(Color.RED)
-                        holder.itemView.bnAnswer.isEnabled = false
-                    }
-                    else {
-                        holder.itemView.answer.setTextColor(Color.GREEN)
-                        holder.itemView.bnAnswer.isEnabled = false
-                    }
                     onItemClickListener?.onItemClick(answer)
+                    holder.itemView.answer.setTextColor(Color.CYAN)
                 }
 
                 holder.itemView.answer.setOnClickListener {
-                    if (answer.isCorrect == 0) {
-                        holder.itemView.answer.setTextColor(Color.RED)
-                        holder.itemView.bnAnswer.isEnabled = false
-                    }
-                    else {
-                        holder.itemView.answer.setTextColor(Color.GREEN)
-                        holder.itemView.bnAnswer.isEnabled = false
-                    }
-
                     holder.itemView.bnAnswer.toggle()
+                    holder.itemView.answer.setTextColor(Color.CYAN)
                     onItemClickListener?.onItemClick(answer)
                 }
+            }
+            is ResultViewHolder -> {
+                val result = items[position] as TestResult
+                holder.itemView.tvCourse.text = result.course
+                if (result.result?.toInt()!! > 75)
+                    holder.itemView.tvResult.setTextColor(Color.GREEN)
+                if (result.result.toInt() < 20)
+                    holder.itemView.tvResult.setTextColor(Color.RED)
+
+                holder.itemView.tvResult.text = result.result
+                holder.itemView.tvDate.text = result.date
             }
         }
     }
@@ -133,6 +136,7 @@ class Adapter(private val context : Context,
     inner class CourseViewHolder (itemView: View) : RecyclerView.ViewHolder(itemView)
     inner class AnswerViewHolder (itemView: View) : RecyclerView.ViewHolder(itemView)
     inner class LessonViewHolder (itemView: View) : RecyclerView.ViewHolder(itemView)
+    inner class ResultViewHolder (itemView: View) : RecyclerView.ViewHolder(itemView)
 
     interface OnItemClickListener {
         fun onItemClick (item : Any)
